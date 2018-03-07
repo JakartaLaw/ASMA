@@ -22,11 +22,11 @@ class CleanData(object):
         data = pd.read_csv(csv_name, sep=';', decimal=',',
                            header=None)
 
-        data.set_index(index, inplace=True)
+        #data.set_index(index, inplace=True)
         return data
 
 
 #data = CleanData.get_data('bmit.csv')
-data = CleanData.get_index()
-data.head()
-pd.to_datetime(str(data['date']), format='%Y%m')
+#data = CleanData.get_index()
+#data.head()
+#pd.to_datetime(str(data['date']), format='%Y%m')
