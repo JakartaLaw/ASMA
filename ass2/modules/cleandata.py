@@ -27,6 +27,6 @@ class CleanData(object):
 
 
 #data = CleanData.get_data('bmit.csv')
-data = CleanData.get_index()
-data.head()
-pd.to_datetime(str(data['date']), format='%Y%m')
+#data = CleanData.get_index()
+#data.head()
+#pd.to_datetime(str(data['date']), format='%Y%m')
