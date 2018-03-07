@@ -22,7 +22,7 @@ class CleanData(object):
         data = pd.read_csv(csv_name, sep=';', decimal=',',
                            header=None)
 
-        data.set_index(index, inplace=True)
+        #data.set_index(index, inplace=True)
         return data
 
 
