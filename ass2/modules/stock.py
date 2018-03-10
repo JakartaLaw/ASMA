@@ -3,7 +3,6 @@ import numpy as np
 from modules.cleandata import CleanData
 import matplotlib.pyplot as plt
 
-%matplotlib inline
 
 # %%
 
