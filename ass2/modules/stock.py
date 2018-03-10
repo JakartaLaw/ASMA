@@ -55,8 +55,10 @@ class Stock(object):
 
         return df
 
-    @classmethod
-    def add_data(cls, df1, df2):
+    def add_data(self, df_name, df):
+        self.data[df_name] = df
+
+    def composite_data(self, df1, df2, standardize=True):
         """ add data to self.data
 
         Parameters
@@ -64,7 +66,34 @@ class Stock(object):
         df1 : string (from data)
         df2 : string (from data)
         """
-        cls.add_dfs(df1, df2)
+
+        df_name = "{}_{}".format(df1, df2)
+        df1_data = self.return_df(df1)
+        df2_data = self.return_df(df2)
+
+        if standardize is True:
+            df1_standard = self.standardize_data(df1_data)
+            df2_standard = self.standardize_data(df2_data)
+            added_dfs = self.add_dfs(df1_standard, df2_standard)
+            self.add_data(df_name, added_dfs)
+
+        elif standardize is False:
+            added_dfs = self.add_dfs(df1_data, df2_data)
+            self.add_data(df_name, added_dfs)
+
+        else:
+            raise Exception("standardize must be either True or False")
+
+    def industry_adjusted_data(self, industry):
+
+        assert industry in ['bmit', 'momit'], "industry must be either 'bmit' or 'momit'"
+
+        df_industry = df['iait']
+        df_benchmark = df['industry_{}'.format(industry)]
+        for i in industry:
+            df_temp = df_industry
+            df_temp[(df_temp != i)] = np.nan
+            df_temp[(df_temp == i)] = 1
 
     def portfolio_dummy(self, kpi, ascending=True):
 
