@@ -1,3 +1,6 @@
+import pandas as pd
+import numpy as np
+
 class Portfolio(object):
     """
     Takes a list of period-wise returns of different stocks and converts them into a portfolio return
