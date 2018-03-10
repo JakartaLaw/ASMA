@@ -17,8 +17,8 @@ class CleanData(object):
         return data['date']
 
     @classmethod
-    def get_data(cls, csv_name, industry=False):
-        if industry == False:
+    def get_data(cls, csv_name, doc_type=None):
+        if doc_type == None:
             index = cls.get_index()
 
             data = pd.read_csv(csv_name, sep=';', decimal=',',
@@ -27,7 +27,7 @@ class CleanData(object):
             data.set_index(index, inplace=True)
             return data
 
-        elif industry == True:
+        elif doc_type == 'Industry':
 
             cols = [i + 1 for i in range(17)]
             index = cls.get_index()
@@ -36,5 +36,14 @@ class CleanData(object):
 
             data.set_index(index, inplace=True)
             return data
+        elif doc_type == 'Factors':
+            index = cls.get_index()
+            
+            data = pd.read_csv(csv_name, sep=';', decimal=',',
+                               header=None, usecols=[0,1,2,3,4,5])
+
+            data.set_index(index, inplace=True)
+            return data
+   
         else:
-            raise Exception('industry must be true of false')
+            raise Exception('doc_type must be None, Industry or Factors')
