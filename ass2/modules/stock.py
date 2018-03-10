@@ -15,8 +15,11 @@ class Stock(object):
         iait = CleanData.get_data('iait.csv')
         rit = CleanData.get_data('rit.csv')
         momit = CleanData.get_data('momit.csv')
+        industry_momit = CleanData.get_data('industry_momit.csv', doc_type=Industry)
+        industry_bmit = CleanData.get_data('industry_bmit.csv', doc_type=Industry)
 
-        data = {'bmit': bmit, 'iait': iait, 'rit': rit, 'momit': momit}
+        data = {'bmit': bmit, 'iait': iait, 'rit': rit, 'momit': momit,
+                'industry_momit': industry_momit, 'industry_bmit': industry_bmit}
         self.data = data
 
     def return_df(self, kpi):
@@ -99,11 +102,11 @@ class Stock(object):
         df_nan = pd.DataFrame(array_nan, index=index, columns=cols)
         return df_nan
 
-    def industry_adjusted_data(self):
+    def industry_adjusted_data(self, industry):
 
         assert industry in ['bmit', 'momit'], "industry must be either 'bmit' or 'momit'"
 
-        df_industry = df['iait']
+        df_industry = df[industry]
         df_benchmark = df['industry_{}'.format(industry)]
         industry_list = df_benchmark.columns
 
