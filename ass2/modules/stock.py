@@ -1,6 +1,11 @@
 import pandas as pd
 import numpy as np
 from modules.cleandata import CleanData
+import matplotlib.pyplot as plt
+
+%matplotlib inline
+
+# %%
 
 
 class Stock(object):
@@ -22,6 +27,7 @@ class Stock(object):
         return stock
 
     def all_stocks(self):
+        """Depreciated"""
 
         list_of_cols = list(self.bmit.columns)
         stocks = dict()
@@ -32,37 +38,20 @@ class Stock(object):
         self.stocks = stocks
         return stocks
 
-    @staticmethod
-    def get_stock(stocks, stock, time, kpi=None):
-
-        if kpi is None:
-            s = stocks[stock]
-            return s.loc[s.index[time]]
-        else:
-            s = stocks[stock]
-            return s[kpi].loc[s.index[time]]
-
-    @classmethod
-    def rank_stock_at_t(cls, stocks, time, kpi):
-
-        list_stocks = [stock for stock in stocks]
-        list_kpi = np.array([cls.get_stock(stocks, stock, time, kpi) for stock in stocks])
-
-        return list_kpi
-
-    def rank_stocks(self, kpi):
-        stocks = self.stocks
+    def portfolio(Self, kpi):
 
 
 test = Stock()
-stocks = test.all_stocks()
+stocks
 
-
-s = stocks[9]
 
 # %%
-print(s.head())
 
-test2 = Stock.rank_stock_at_t(stocks, 4, 'bmit')
+# %%
+StockPicker.rank_stocks(stocks, 'bmit').head()
 
-test.bmit
+# %%
+a = pd.Series([1, 2, 3])
+b = pd.Series([2, 3, 4])
+
+pd.DataFrame(data=[a, b])
