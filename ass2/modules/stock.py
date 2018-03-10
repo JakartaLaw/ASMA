@@ -11,32 +11,13 @@ class Stock(object):
 
     def __init__(self):
 
-        self.bmit = CleanData.get_data('bmit.csv')
-        self.iait = CleanData.get_data('iait.csv')
-        self.rit = CleanData.get_data('rit.csv')
-        self.momit = CleanData.get_data('momit.csv')
-        self.kpi_list = ['bmit', 'iait', 'rit', 'momit']
+        bmit = CleanData.get_data('bmit.csv')
+        iait = CleanData.get_data('iait.csv')
+        rit = CleanData.get_data('rit.csv')
+        momit = CleanData.get_data('momit.csv')
 
-    def create_stock(self, n_stock):
-
-        bmit, iait, rit, momit = self.bmit[n_stock], self.iait[n_stock], self.rit[n_stock], self.momit[n_stock]
-
-        stock = pd.concat([bmit, iait, rit, momit], axis=1)
-        stock.columns = self.kpi_list
-
-        return stock
-
-    def all_stocks(self):
-        """Depreciated"""
-
-        list_of_cols = list(self.bmit.columns)
-        stocks = dict()
-
-        for i in list_of_cols:
-            stocks[i] = self.create_stock(i)
-
-        self.stocks = stocks
-        return stocks
+        data = {'bmit': bmit, 'iait': iait, 'rit': rit, 'momit': momit}
+        self.data = data
 
     def return_df(self, kpi):
         """
@@ -49,32 +30,53 @@ class Stock(object):
         df_kpi : pandas dataframe with desired kpi
         """
 
-        assert kpi in self.kpi_list, "kpi i should be one of {}".format(self.kpi_list)
+        kpi_list = [key for key in self.data]
+        assert kpi in kpi_list, "kpi i should be one of {}".format(kpi_list)
 
-        # grim implementation
-        if kpi == 'bmit':
-            return self.bmit
-        if kpi == 'rit':
-            return self.rit
-        if kpi == 'momit':
-            return self.momit
-        if kpi == 'iait':
-            return self.iait
+        return self.data[kpi]
+
+    @staticmethod
+    def standardize_data(df):
+        std_df = df.std(axis=1)
+        mean_df = df.mean(axis=1)
+        return df.add(-mean_df, axis=0).mul((1 / std_df), axis=0)  # standardized data
+
+    @staticmethod
+    def add_dfs(df1, df2, add_or_minus='add'):
+
+        if add_or_minus == 'add':
+            df = pd.DataFrame(df1.fillna(0) + df2.fillna(0))
+            df[(df == 0)] = np.nan
+        elif add_or_minus == 'minus':
+            df = pd.DataFrame(df1.fillna(0) - df2.fillna(0))
+            df[(df == 0)] = np.nan
+        else:
+            raise Exception("add_or_minus should be either 'add' or 'minus' ")
+
+        return df
+
+    @classmethod
+    def add_data(cls, df1, df2):
+        """ add data to self.data
+
+        Parameters
+        ==========
+        df1 : string (from data)
+        df2 : string (from data)
+        """
+        cls.add_dfs(df1, df2)
 
     def portfolio_dummy(self, kpi, ascending=True):
-
-        # grim implementation
 
         df_kpi = self.return_df(kpi)
 
         df_rank = df_kpi.rank(axis=1, pct=True, ascending=ascending)
-        df_rank[(df_rank <= 0.8)] = np.nan
+        df_rank[(df_rank < 0.8)] = np.nan
+        df_rank[(df_rank > -1)] = 1
 
-        df_dummy = df_rank
-        df_dummy[(df_dummy > -1)] = 1
-        return df_dummy
+        return df_rank
 
-    def portfolio(self, kpi, ascending_performance=True, return_dummy=False):
+    def portfolio(self, kpi, highlow='high', return_dummy=False):
         """
         Parameters:
         ===========
@@ -88,7 +90,18 @@ class Stock(object):
         """
 
         df_rit = self.return_df('rit')
-        df_dummy = self.portfolio_dummy(kpi, ascending_performance)
+
+        if highlow is 'high':
+            df_dummy = self.portfolio_dummy(kpi, True)
+        elif highlow is 'low':
+            df_dummy = self.portfolio_dummy(kpi, False)
+        elif highlow is 'highlow':
+            dummy_high = self.portfolio_dummy(kpi, True)
+            dummy_low = self.portfolio_dummy(kpi, False)
+            df_dummy = self.add_dfs(dummy_high, dummy_low, add_or_minus='minus')
+        else:
+            raise Exception("highlow must be either: 'high', 'low', 'highlow'")
+
         if return_dummy is False:
             return df_rit * df_dummy
         if return_dummy is True:

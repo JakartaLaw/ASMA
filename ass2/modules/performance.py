@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-#from modules.utils import to_latex_table
+from modules.utils import to_latex_table
 
 
 class Performance(object):
@@ -11,10 +11,10 @@ class Performance(object):
     # sharpe
     # t_stat
 
-    def __init__(self, portfolio_returns, frequency, risk_free_rate):
-        self.portfolio_returns
-        self.frequency
-        self.risk_free_rate
+    def __init__(self, portfolio_returns, frequency, dummy=None):
+        self.portfolio_returns = portfolio_returns
+        self.frequency = frequency
+        self.dummy = dummy
 
     @staticmethod
     def avg_return(series, frequency):
@@ -22,13 +22,13 @@ class Performance(object):
 
     @staticmethod
     def std_dev(series, frequency):
-        return np.sqrt(np.var(VolatilityTimingPortfolio) * frequency)
+        return np.sqrt(np.var(series) * frequency)
 
     @classmethod
-    def sharp_ratio(cls, series, frequency, risk_free_rate):
+    def sharp_ratio(cls, series, frequency):
         ER = cls.avg_return(series, frequency)
-        STD = cls.avg_return(series, frequency)
-        return (ER - np.mean(risk_free_rate)) / STD
+        STD = cls.std_dev(series, frequency)
+        return ER / STD
 
     @staticmethod
     def t_statistic(series, frequency):
@@ -46,15 +46,33 @@ class Performance(object):
         product_array = np.array([i + 1 for i in series])
         return np.prod(product_array)**(frequency / len(series)) - 1
 
-    def get_performance(self):
-        avg_ret = self.avg_return(self.series, self.frequency)
-        std_dev = self.std_dev(self.series, self.frequency)
-        t_stat = self.t_statistic(self.series, self.frequency)
-        geo_ret = self.geo_return(self.series, self.frequency)
+    @staticmethod
+    def average_number_of_months(dummy):
+        if dummy is None:
+            return None
+        else:
+            return np.mean(dummy.count(axis=0))
 
-        self.performance = pd.DataFrame({'avg return': avg_ret, 'std. deviation': std_dev})
+    def get_performance(self, name):
+        avg_ret = self.avg_return(self.portfolio_returns, self.frequency)
+        std_dev = self.std_dev(self.portfolio_returns, self.frequency)
+        sharp_ratio = self.sharp_ratio(self.portfolio_returns, self.frequency)
+        t_stat = self.t_statistic(self.portfolio_returns, self.frequency)
+        geo_ret = self.geo_return(self.portfolio_returns, self.frequency)
+        count_months = self.average_number_of_months(self.dummy)
+
+        if count_months is None:
+            performance = pd.DataFrame(
+                {'avg return': avg_ret, 'std. deviation': std_dev, 'sharpe ratio': sharp_ratio, 't-stat': t_stat})
+        else:
+            performance = pd.DataFrame(
+                {'avg return': avg_ret, 'std. deviation': std_dev, 'sharpe ratio': sharp_ratio, 't-stat': t_stat, 'avg months for stock': count_months})
+
+        performance['index_name'] = name
+        performance.set_index(['index_name'], inplace=True)
+        self.performance = performance
         return self.performance
 
-    def performance_to_latex(self, file_name):
-        #to_latex_table(file_name, self.performance, directory=None, index=False, nr_decimals=2)
-        pass
+    def performance_to_latex(self, file_name, decimals=3):
+        to_latex_table(file_name, self.performance, directory=None,
+                       index=True, nr_decimals=decimals)

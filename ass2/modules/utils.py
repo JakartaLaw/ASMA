@@ -1,3 +1,5 @@
+import pandas as pd
+
 
 def date_fixer(x):
     import pandas as pd
