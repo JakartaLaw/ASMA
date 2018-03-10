@@ -17,11 +17,23 @@ class CleanData(object):
         return data['date']
 
     @classmethod
-    def get_data(cls, csv_name):
-        index = cls.get_index()
+    def get_data(cls, csv_name, industry=False):
+        if industry == False:
+            index = cls.get_index()
+            
+            data = pd.read_csv(csv_name, sep=';', decimal=',',
+                               header=None)
 
-        data = pd.read_csv(csv_name, sep=';', decimal=',',
-                           header=None)
+            data.set_index(index, inplace=True)
+            return data
+        elif industry == True:
+            
+            index = cls.get_index()
+            
+            data = pd.read_csv(csv_name, sep=';', decimal=',',
+                               header=0)
 
-        data.set_index(index, inplace=True)
-        return data
+            data.set_index(index, inplace=True)
+            return data
+        else:
+            raise Exception('industry must be true of false')
