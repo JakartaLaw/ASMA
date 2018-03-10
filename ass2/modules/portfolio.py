@@ -18,7 +18,8 @@ class Portfolio(object):
         _portfolio = df.sum(axis=1)
         _w = cls.portfolio_weigths(cls, df)
         new_list = [_w[i]*_portfolio[i] for i in range(len(_w))]
-        return new_list
+        new_df = pd.DataFrame(new_list, index=df.index)
+        return new_df
             
 
 #### test ####
@@ -30,6 +31,6 @@ class Portfolio(object):
 #a = list(df.sum(axis=1))
 #b = ny.portfolio_weigths(df)
 #new_list = [a[i]*b[i] for i in range(len(a))]
-#print(ny.period_return(df))
+#res = ny.period_return(df)
         
     
