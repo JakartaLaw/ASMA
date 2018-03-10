@@ -89,43 +89,43 @@ class Stock(object):
 
         df_industry[(df_industry != i)] = np.nan
         df_industry[(df_industry == i)] = 1
-        return df_industry.mul(df_benchmark), axis = 0)
+        return df_industry.mul(df_benchmark, axis=0)
 
     @staticmethod
     def empty_df(df):
 
-        index, cols, shape=df.index, df.columns, df.shape
-        array_nan=np.empty(shape).fill(np.nan)
-        df_nan=pd.DataFrame(array_nan, index = index, columns = cols)
+        index, cols, shape = df.index, df.columns, df.shape
+        array_nan = np.empty(shape).fill(np.nan)
+        df_nan = pd.DataFrame(array_nan, index=index, columns=cols)
         return df_nan
 
     def industry_adjusted_data(self):
 
         assert industry in ['bmit', 'momit'], "industry must be either 'bmit' or 'momit'"
 
-        df_industry=df['iait']
-        df_benchmark=df['industry_{}'.format(industry)]
-        industry_list=df_benchmark.columns
+        df_industry = df['iait']
+        df_benchmark = df['industry_{}'.format(industry)]
+        industry_list = df_benchmark.columns
 
-        df_merge=self.empty_df(df_industry)
+        df_merge = self.empty_df(df_industry)
 
         for i in industry_list:
-            df_temp=self.industry_adjustment(df_industry, df_benchmark[i])
-            df_merge=self.add_dfs(df_merge, df_temp, add_or_minus = 'add')
+            df_temp = self.industry_adjustment(df_industry, df_benchmark[i])
+            df_merge = self.add_dfs(df_merge, df_temp, add_or_minus='add')
 
         return df_merge
 
-    def portfolio_dummy(self, kpi, ascending = True):
+    def portfolio_dummy(self, kpi, ascending=True):
 
-        df_kpi=self.return_df(kpi)
+        df_kpi = self.return_df(kpi)
 
-        df_rank=df_kpi.rank(axis = 1, pct = True, ascending = ascending)
-        df_rank[(df_rank < 0.8)]=np.nan
-        df_rank[(df_rank > -1)]=1
+        df_rank = df_kpi.rank(axis=1, pct=True, ascending=ascending)
+        df_rank[(df_rank < 0.8)] = np.nan
+        df_rank[(df_rank > -1)] = 1
 
         return df_rank
 
-    def portfolio(self, kpi, highlow = 'high', return_dummy = False):
+    def portfolio(self, kpi, highlow='high', return_dummy=False):
         """
         Parameters:
         ===========
@@ -138,16 +138,16 @@ class Stock(object):
         df_rit * df_dummy, (df_dummy) --> if df_dummy==True
         """
 
-        df_rit=self.return_df('rit')
+        df_rit = self.return_df('rit')
 
         if highlow is 'high':
-            df_dummy=self.portfolio_dummy(kpi, True)
+            df_dummy = self.portfolio_dummy(kpi, True)
         elif highlow is 'low':
-            df_dummy=self.portfolio_dummy(kpi, False)
+            df_dummy = self.portfolio_dummy(kpi, False)
         elif highlow is 'highlow':
-            dummy_high=self.portfolio_dummy(kpi, True)
-            dummy_low=self.portfolio_dummy(kpi, False)
-            df_dummy=self.add_dfs(dummy_high, dummy_low, add_or_minus = 'minus')
+            dummy_high = self.portfolio_dummy(kpi, True)
+            dummy_low = self.portfolio_dummy(kpi, False)
+            df_dummy = self.add_dfs(dummy_high, dummy_low, add_or_minus='minus')
         else:
             raise Exception("highlow must be either: 'high', 'low', 'highlow'")
 

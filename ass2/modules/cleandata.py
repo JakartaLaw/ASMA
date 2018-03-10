@@ -20,18 +20,19 @@ class CleanData(object):
     def get_data(cls, csv_name, industry=False):
         if industry == False:
             index = cls.get_index()
-            
+
             data = pd.read_csv(csv_name, sep=';', decimal=',',
                                header=None)
 
             data.set_index(index, inplace=True)
             return data
+
         elif industry == True:
-            
+
+            cols = [i + 1 for i in range(17)]
             index = cls.get_index()
-            
             data = pd.read_csv(csv_name, sep=';', decimal=',',
-                               header=0)
+                               header=0, names=cols)
 
             data.set_index(index, inplace=True)
             return data
