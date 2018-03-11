@@ -23,6 +23,11 @@ class Stock(object):
 
         self.data = data
 
+    def __repr__(self):
+
+        data_names = [key for key in self.data]
+        return str(data_names)
+
     def return_df(self, kpi):
         """
         Parameters:
@@ -99,12 +104,8 @@ class Stock(object):
     @staticmethod
     def industry_adjustment(df_industry, df_benchmark, industry):
 
-        print(np.sum(df_benchmark.count()))
-        print(np.sum(df_industry.count()))
         df_industry[(df_industry != industry)] = np.nan
-        print(np.sum(df_industry.count()))
         df_industry[(df_industry == industry)] = 1
-        print(np.sum(df_industry.count()))
         return df_industry.mul(df_benchmark, axis=0)
 
     def industry_adjusted_data(self, industry):
@@ -112,16 +113,21 @@ class Stock(object):
         assert industry in ['bmit', 'momit'], "industry must be either 'bmit' or 'momit'"
 
         df_industry = self.data[industry]
+        df_iait = self.data['iait']
         df_benchmark = self.data['industry_{}'.format(industry)]
         industry_list = df_benchmark.columns
+        df_name = "adjusted_{}".format(industry)
 
         df_merge = self.empty_df(df_industry)
 
         for i in industry_list:
-            df_temp = self.industry_adjustment(df_industry, df_benchmark[i], industry=i)
+
+            df_industry_temp = pd.DataFrame(df_iait, copy=True)
+            df_temp = self.industry_adjustment(df_industry_temp, df_benchmark[i], industry=i)
             df_merge = self.add_dfs(df_merge, df_temp, add_or_minus='add')
 
-        return df_merge
+        df_industry_adjusted = self.add_dfs(df_industry, df_merge, add_or_minus='minus')
+        self.add_data(df_name, df_industry_adjusted)
 
     def portfolio_dummy(self, kpi, ascending=True):
 
