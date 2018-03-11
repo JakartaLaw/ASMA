@@ -76,3 +76,20 @@ class Performance(object):
     def performance_to_latex(self, file_name, decimals=3):
         to_latex_table(file_name, self.performance, directory=None,
                        index=True, nr_decimals=decimals)
+
+
+class CollectPerformance(object):
+
+    def __init__(self, performance_list):
+        self.performance_list = performance_list
+
+    def __call__(self):
+        self.performance_concat()
+        return self.performance
+
+    def performance_concat(self):
+        self.performance = pd.concat(self.performance_list)
+
+    def performance_to_latex(self, file_name, decimals=3):
+        to_latex_table(file_name, self.performance, directory=None,
+                       index=True, nr_decimals=decimals)
