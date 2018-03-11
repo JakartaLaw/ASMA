@@ -112,7 +112,7 @@ class Stock(object):
 
         assert industry in ['bmit', 'momit'], "industry must be either 'bmit' or 'momit'"
 
-        df_industry = self.data[industry]
+        df_industry,  = self.data[industry]
         df_iait = self.data['iait']
         df_benchmark = self.data['industry_{}'.format(industry)]
         industry_list = df_benchmark.columns
