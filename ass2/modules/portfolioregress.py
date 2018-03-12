@@ -41,9 +41,9 @@ class PortfolioRegress(object):
     @classmethod
     def indicator_func(cls, data, insample=12):
         indicator_list = []
-        a = PortfolioRegress.data_setup(data, data_type='x', lag_len=0)
+        a = PortfolioRegress.data_setup(data, data_type='x', lag_len=12-insample)
         for i in range(insample, len(data)):
-            if a[i] > np.mean(a[0:i-1]):
+            if a[i] > np.mean(a[i-insample:i-1]):
                 indicator = 1
             else:
                 indicator = 0
