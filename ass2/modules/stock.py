@@ -17,9 +17,10 @@ class Stock(object):
         momit = CleanData.get_data('momit.csv')
         industry_momit = CleanData.get_data('industry_momit.csv', doc_type='Industry')
         industry_bmit = CleanData.get_data('industry_bmit.csv', doc_type='Industry')
+        factors = CleanData.get_data('data_and_factors.csv', doc_type='Factors')
 
         data = {'bmit': bmit, 'iait': iait, 'rit': rit, 'momit': momit,
-                'industry_momit': industry_momit, 'industry_bmit': industry_bmit}
+                'industry_momit': industry_momit, 'industry_bmit': industry_bmit, 'factors': factors}
 
         self.data = data
 
@@ -112,7 +113,7 @@ class Stock(object):
 
         assert industry in ['bmit', 'momit'], "industry must be either 'bmit' or 'momit'"
 
-        df_industry,  = self.data[industry]
+        df_industry = self.data[industry]
         df_iait = self.data['iait']
         df_benchmark = self.data['industry_{}'.format(industry)]
         industry_list = df_benchmark.columns

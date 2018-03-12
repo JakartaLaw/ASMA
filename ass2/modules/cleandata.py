@@ -37,13 +37,13 @@ class CleanData(object):
             data.set_index(index, inplace=True)
             return data
         elif doc_type == 'Factors':
-            index = cls.get_index()
-            
-            data = pd.read_csv(csv_name, sep=';', decimal=',',
-                               header=None, usecols=[0,1,2,3,4,5])
 
-            data.set_index(index, inplace=True)
+            data = pd.read_csv(csv_name, sep=';', decimal=',',
+                               header=None, usecols=[0, 1, 2, 3, 4, 5])
+
+            data.columns = ['date', 'MKT', 'SMB', 'HML', 'WML', 'Tbillrate']
+            data.set_index('date', inplace=True)
             return data
-   
+
         else:
             raise Exception('doc_type must be None, Industry or Factors')
