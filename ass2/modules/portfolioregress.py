@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 
-class P_Regress(object):
+class PortfolioRegress(object):
     
     def __init__(self):
        pass
@@ -33,14 +33,14 @@ class P_Regress(object):
         
         
     @classmethod
-    def regressor_loop(cls, x, y):
-        a = P_Regress.data_setup(x, data_type='x')
-        b = P_Regress.data_setup(y, data_type='y')
+    def regressor_loop(cls, data, index_name):
+        a = PortfolioRegress.data_setup(data, data_type='x')
+        b = PortfolioRegress.data_setup(data, data_type='y')
         slope, intercept, r_value, p_value, std_err = stats.linregress(a,b)
         n_dict=  {'slope': slope,  'intercept': intercept,
                 'r_value': r_value, 'p_value': p_value, 
                 'std_error' : std_err}
-        return pd.DataFrame.from_dict(n_dict, orient = 'index')
+        return pd.DataFrame(n_dict, index = [index_name])
 
     
   #  @staticmethod
