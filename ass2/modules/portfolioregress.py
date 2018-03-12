@@ -44,32 +44,29 @@ class PortfolioRegress(object):
             std_list.append(std_obs)
         return std_list
         
+    @classmethod
+    def indicator_func(cls, data, insample=12):
+        indicator_list = []
+        a = PortfolioRegress.data_setup(data, data_type='x', lag_len=0)
+        for i in range(insample, len(data)):
+            if a[i] > np.mean(a[0:i-1]):
+                indicator = 1
+            else:
+                indicator = 0
+            indicator_list.append(indicator)
+        return pd.DataFrame(indicator_list)
         
     @classmethod
-    def regressor_loop(cls, data, index_name):
-        a = PortfolioRegress.data_setup(data, data_type='x')
-        b = PortfolioRegress.data_setup(data, data_type='y')
+    def regressor_loop(cls, x, y, index_name, lag_x = 12, lag_y = 12):
+        a = PortfolioRegress.data_setup(x, data_type='x', lag_len=lag_x)
+        b = PortfolioRegress.data_setup(y, data_type='y', lag_len=lag_y)
         a_std = PortfolioRegress.standardize_data(a)
         slope, intercept, r_value, p_value, std_err = stats.linregress(a_std,b)
         n_dict=  {'slope': slope,  'intercept': intercept,
                 'r_value': r_value, 'p_value': p_value, 
                 'std_error' : std_err}
         return pd.DataFrame(n_dict, index = [index_name])
-
     
-  #  @staticmethod
-  #  def get_time_index(cutoff=12):
-  #      x = CleanData.get_index()
-  #      x = x[cutoff:]
-  #      x = list(x)
-  #      return {'Date': x}
     
-  #  @classmethod
-  #  def get_df(cls, x, y):
-  #      a = P_Regress.get_time_index()
-  #      b = P_Regress.regressor_loop(x, y)
-  #      c = P_Regress.combine_dicts(a, b)
-  #      df = pd.DataFrame.from_dict(c)
-  #      return df
-  
 
+            

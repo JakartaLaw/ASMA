@@ -83,7 +83,6 @@ p2 = perf.get_performance('composite adjusted high/low')
 
 # %%
  
-
 reg = PortfolioRegress.regressor_loop(p, index_name='Performance statistics')
 
 
