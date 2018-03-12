@@ -9,13 +9,7 @@ class PortfolioRegress(object):
     
     def __init__(self):
        pass
-    
- #   @staticmethod
- #   def combine_dicts(first_dict, last_dict):
- #        z = {**first_dict, **last_dict}
- #        return z
-    
-    
+  
     @staticmethod
     def data_setup(data, data_type='x', lag_len=12):
         data_list = []
