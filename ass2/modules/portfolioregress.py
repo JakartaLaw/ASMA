@@ -51,11 +51,14 @@ class PortfolioRegress(object):
         return pd.DataFrame(indicator_list)
         
     @classmethod
-    def regressor_loop(cls, x, y, index_name, lag_x = 12, lag_y = 12):
+    def regressor_loop(cls, x, y, index_name, standardize=False, lag_x = 12, lag_y = 12):
         a = PortfolioRegress.data_setup(x, data_type='x', lag_len=lag_x)
         b = PortfolioRegress.data_setup(y, data_type='y', lag_len=lag_y)
-        a_std = PortfolioRegress.standardize_data(a)
-        slope, intercept, r_value, p_value, std_err = stats.linregress(a_std,b)
+        if standardize ==False:
+            a = PortfolioRegress.standardize_data(a)
+        else:
+            pass
+        slope, intercept, r_value, p_value, std_err = stats.linregress(a,b)
         n_dict=  {'slope': slope,  'intercept': intercept,
                 'r_value': r_value, 'p_value': p_value, 
                 'std_error' : std_err}
