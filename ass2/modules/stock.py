@@ -15,9 +15,18 @@ class Stock(object):
         iait = CleanData.get_data('iait.csv')
         rit = CleanData.get_data('rit.csv')
         momit = CleanData.get_data('momit.csv')
+        industry_momit = CleanData.get_data('industry_momit.csv', doc_type='Industry')
+        industry_bmit = CleanData.get_data('industry_bmit.csv', doc_type='Industry')
 
-        data = {'bmit': bmit, 'iait': iait, 'rit': rit, 'momit': momit}
+        data = {'bmit': bmit, 'iait': iait, 'rit': rit, 'momit': momit,
+                'industry_momit': industry_momit, 'industry_bmit': industry_bmit}
+
         self.data = data
+
+    def __repr__(self):
+
+        data_names = [key for key in self.data]
+        return str(data_names)
 
     def return_df(self, kpi):
         """
@@ -85,13 +94,6 @@ class Stock(object):
             raise Exception("standardize must be either True or False")
 
     @staticmethod
-    def industry_adjustment(df_industry, df_benchmark):
-
-        df_industry[(df_industry != i)] = np.nan
-        df_industry[(df_industry == i)] = 1
-        return df_industry.mul(df_benchmark, axis=0)
-
-    @staticmethod
     def empty_df(df):
 
         index, cols, shape = df.index, df.columns, df.shape
@@ -99,21 +101,33 @@ class Stock(object):
         df_nan = pd.DataFrame(array_nan, index=index, columns=cols)
         return df_nan
 
-    def industry_adjusted_data(self):
+    @staticmethod
+    def industry_adjustment(df_industry, df_benchmark, industry):
+
+        df_industry[(df_industry != industry)] = np.nan
+        df_industry[(df_industry == industry)] = 1
+        return df_industry.mul(df_benchmark, axis=0)
+
+    def industry_adjusted_data(self, industry):
 
         assert industry in ['bmit', 'momit'], "industry must be either 'bmit' or 'momit'"
 
-        df_industry = df['iait']
-        df_benchmark = df['industry_{}'.format(industry)]
+        df_industry = self.data[industry]
+        df_iait = self.data['iait']
+        df_benchmark = self.data['industry_{}'.format(industry)]
         industry_list = df_benchmark.columns
+        df_name = "adjusted_{}".format(industry)
 
         df_merge = self.empty_df(df_industry)
 
         for i in industry_list:
-            df_temp = self.industry_adjustment(df_industry, df_benchmark[i])
+
+            df_industry_temp = pd.DataFrame(df_iait, copy=True)
+            df_temp = self.industry_adjustment(df_industry_temp, df_benchmark[i], industry=i)
             df_merge = self.add_dfs(df_merge, df_temp, add_or_minus='add')
 
-        return df_merge
+        df_industry_adjusted = self.add_dfs(df_industry, df_merge, add_or_minus='minus')
+        self.add_data(df_name, df_industry_adjusted)
 
     def portfolio_dummy(self, kpi, ascending=True):
 
