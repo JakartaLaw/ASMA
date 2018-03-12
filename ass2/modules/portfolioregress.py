@@ -14,7 +14,7 @@ class PortfolioRegress(object):
  #   def combine_dicts(first_dict, last_dict):
  #        z = {**first_dict, **last_dict}
  #        return z
-
+    
     
     @staticmethod
     def data_setup(data, data_type='x', lag_len=12):
@@ -30,13 +30,27 @@ class PortfolioRegress(object):
         else:
             raise Exception('data_type must be x or y')
         return data_list
+    
+    @staticmethod
+    def standardize_data(data):
+        """
+        do this after performing data_setup
+        """
+        std_list = []
+        std_dev = Performance.std_dev(data, 1)
+        avg_data = Performance.avg_return(data, 1)
+        for i in range(len(data)):
+            std_obs = (data[i] - avg_data)/std_dev
+            std_list.append(std_obs)
+        return std_list
         
         
     @classmethod
     def regressor_loop(cls, data, index_name):
         a = PortfolioRegress.data_setup(data, data_type='x')
         b = PortfolioRegress.data_setup(data, data_type='y')
-        slope, intercept, r_value, p_value, std_err = stats.linregress(a,b)
+        a_std = PortfolioRegress.standardize_data(a)
+        slope, intercept, r_value, p_value, std_err = stats.linregress(a_std,b)
         n_dict=  {'slope': slope,  'intercept': intercept,
                 'r_value': r_value, 'p_value': p_value, 
                 'std_error' : std_err}
@@ -57,5 +71,5 @@ class PortfolioRegress(object):
   #      c = P_Regress.combine_dicts(a, b)
   #      df = pd.DataFrame.from_dict(c)
   #      return df
-    
+  
 
