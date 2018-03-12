@@ -54,7 +54,7 @@ class PortfolioRegress(object):
     def regressor_loop(cls, x, y, index_name, standardize=False, lag_x = 12, lag_y = 12):
         a = PortfolioRegress.data_setup(x, data_type='x', lag_len=lag_x)
         b = PortfolioRegress.data_setup(y, data_type='y', lag_len=lag_y)
-        if standardize ==False:
+        if standardize ==True:
             a = PortfolioRegress.standardize_data(a)
         else:
             pass
