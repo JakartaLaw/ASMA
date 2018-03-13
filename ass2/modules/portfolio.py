@@ -22,10 +22,9 @@ class Portfolio(object):
         new_df = pd.DataFrame(new_list, index=df.index)
         return new_df
     
-    #def __init__(self, df):
-        #self.df_portfolio = self.period_return(df)
-        
-   # def get_portfolio(self):
-    #    return self.df_portfolio
-            
-
+    @staticmethod
+    def fifty_fifty(return1, return2):
+        combined = return1.add(other=return2)
+        weighted = combined.multiply(other=0.5)
+        return weighted
+    
