@@ -17,18 +17,19 @@ class Performance(object):
         self.dummy = dummy
         self.sum_of_weights = sum_of_weights
 
+    
     @staticmethod
-    def avg_return(series, frequency):
-        return np.mean(series * frequency)
+    def avg_return(series, frequency, sum_of_weights=1):
+        return np.mean(series * frequency)*sum_of_weights
 
     @staticmethod
-    def std_dev(series, frequency):
-        return np.sqrt(np.var(series) * frequency)
+    def std_dev(series, frequency, sum_of_weights=1):
+        return np.sqrt(np.var(series) * frequency)*sum_of_weights
 
     @classmethod
-    def sharp_ratio(cls, series, frequency):
-        ER = cls.avg_return(series, frequency)
-        STD = cls.std_dev(series, frequency)
+    def sharpe_ratio(cls, series, frequency, sum_of_weights=1):
+        ER = cls.avg_return(series, frequency, sum_of_weights)
+        STD = cls.std_dev(series, frequency, sum_of_weights)
         return ER / STD
 
     @classmethod
@@ -55,19 +56,19 @@ class Performance(object):
             return np.mean(dummy.count(axis=0))
 
     def get_performance(self, name):
-        avg_ret = self.avg_return(self.portfolio_returns, self.frequency)
-        std_dev = self.std_dev(self.portfolio_returns, self.frequency)
-        sharp_ratio = self.sharp_ratio(self.portfolio_returns, self.frequency)
+        avg_ret = self.avg_return(self.portfolio_returns, self.frequency, self.sum_of_weights)
+        std_dev = self.std_dev(self.portfolio_returns, self.frequency, self.sum_of_weights)
+        sharpe_ratio = self.sharpe_ratio(self.portfolio_returns, self.frequency, self.sum_of_weights)
         t_stat = self.t_statistic(self.portfolio_returns, self.frequency)
         geo_ret = self.geo_return(self.portfolio_returns, self.frequency)
         count_months = self.average_number_of_months(self.dummy)
 
         if count_months is None:
             performance = pd.DataFrame(
-                {'avg return': avg_ret, 'std. deviation': std_dev, 'sharpe ratio': sharp_ratio, 't-stat': t_stat})
+                {'avg return': avg_ret, 'std. deviation': std_dev, 'sharpe ratio': sharpe_ratio, 't-stat': t_stat})
         else:
             performance = pd.DataFrame(
-                {'avg return': avg_ret, 'std. deviation': std_dev, 'sharpe ratio': sharp_ratio, 't-stat': t_stat, 'avg months for stock': count_months})
+                {'avg return': avg_ret, 'std. deviation': std_dev, 'sharpe ratio': sharpe_ratio, 't-stat': t_stat, 'avg months for stock': count_months})
 
         performance['index_name'] = name
         performance.set_index(['index_name'], inplace=True)

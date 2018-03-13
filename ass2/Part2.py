@@ -40,9 +40,8 @@ stock = Stock()
 
 s, d = stock.portfolio(kpi='bmit', highlow='highlow', return_dummy=True)
 p = Portfolio.portfolio_return(s)
-perf = Performance(p, 12, d)
+perf = Performance(p, 12, d, sum_of_weights=2)
 p2 =perf.get_performance('bmit highlow')
-
 
 
 
