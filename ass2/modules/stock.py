@@ -130,11 +130,25 @@ class Stock(object):
         df_industry_adjusted = self.add_dfs(df_industry, df_merge, add_or_minus='minus')
         self.add_data(df_name, df_industry_adjusted)
 
-    def portfolio_dummy(self, kpi, ascending=True):
+    def industry_dummy(self, kpi, ascending=True):
+
+        kpi_data = "industry_{}".format(kpi)
+        industry = self.return_df(kpi_data)
+
+        df_rank = industry.rank(axis=1, ascending=ascending)
+        df_rank[(df_rank > 3)] = np.nan
+        df_rank[(df_rank > -1)] = 1
+
+        return df_rank
+
+    def industry_rotation(self):
+        pass
+
+    def portfolio_dummy(self, kpi, ascending=True, pct=True):
 
         df_kpi = self.return_df(kpi)
 
-        df_rank = df_kpi.rank(axis=1, pct=True, ascending=ascending)
+        df_rank = df_kpi.rank(axis=1, pct=pct, ascending=ascending)
         df_rank[(df_rank < 0.8)] = np.nan
         df_rank[(df_rank > -1)] = 1
 
