@@ -12,9 +12,7 @@ class FourFactorModel(object):
         self.portfolio = portfolio
         self.portfolio.columns = ['actual']
 
-    def regress_model(self, model_name):
-
-        self.model_name = model_name
+    def four_factor_model(self):
 
         factors = self.stock.return_df('factors')
         X = factors.drop(['Tbillrate'], axis=1)
@@ -30,9 +28,37 @@ class FourFactorModel(object):
 
             results[cols[i]] = coef[i]
 
-        self.results = pd.DataFrame(results, index=[self.model_name])
-        self.prediction = pd.DataFrame(lr.predict(X), index=X.index)
-        self.prediction.columns = ['prediction']
+        self.four_factor = pd.DataFrame(results, index=['four factor'])
+        self.four_factor_prediction = pd.DataFrame(lr.predict(X), index=X.index)
+        self.four_factor_prediction.columns = ['prediction']
+
+    def capm_model(self):
+
+        factors = self.stock.return_df('factors')
+        X = factors.drop(['Tbillrate', 'SMB', 'WML', 'HML'], axis=1)
+        y = self.portfolio
+        cols = list(X.columns)
+
+        lr = LinearRegression()
+        lr.fit(X=X, y=y)
+        r2, intercept, coef = lr.score(X, y), list(lr.intercept_)[0], lr.coef_[0]
+
+        results = {'r2': r2, 'intercept': intercept}
+        for i in range(len(cols)):
+
+            results[cols[i]] = coef[i]
+
+        self.capm = pd.DataFrame(results, index=['capm'])
+        self.capm_prediction = pd.DataFrame(lr.predict(X), index=X.index)
+        self.capm_prediction.columns = ['prediction']
+
+    def regress_model(self, model_name):
+
+        self.capm_model()
+        self.four_factor_model()
+
+        self.model_name = model_name
+        self.results = pd.concat([self.capm, self.four_factor])
 
     def get_results(self):
         return self.results
@@ -41,5 +67,10 @@ class FourFactorModel(object):
         to_latex_table(file_name, self.results, directory=None,
                        index=True, nr_decimals=decimals)
 
-    def get_prediction(self):
-        return pd.concat([self.prediction, self.portfolio], axis=1)
+    def get_prediction(self, model):
+
+        if model is 'CAPM':
+            return pd.concat([self.capm_prediction, self.portfolio], axis=1)
+
+        elif model is 'four_factor':
+            return pd.concat([self.four_factor_prediction, self.portfolio], axis=1)
