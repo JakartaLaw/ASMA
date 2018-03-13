@@ -22,21 +22,13 @@ from modules.portfolioregress import PortfolioRegress
 
 # # Preparation
 
-# In[2]:
+# %% Initiating the Stock-instance
 
 
 stock = Stock()
 
-
-# # Question 1.1 - 1.2
-
-# ### bmit
-
-
-
-
-# In[5]:
-
+# %% Loading once more the returns and performance statistics
+# for the high-low portfolio
 
 s, d = stock.portfolio(kpi='bmit', highlow='highlow', return_dummy=True)
 p = Portfolio.portfolio_return(s)
@@ -44,47 +36,37 @@ perf = Performance(p, 12, d, sum_of_weights=2)
 p2 =perf.get_performance('bmit highlow')
 
 
-
-
-
-
-# In[10]:
-
-
-stock.composite_data('bmit', 'momit')
-
-# In[13]:
-
-
-s, d = stock.portfolio(kpi='bmit_momit', highlow='highlow', return_dummy=True)
-p = Portfolio.portfolio_return(s)
-perf = Performance(p, 12, d)
-p2 = perf.get_performance('composite high/low')
-
-
-
-# In[15]:
-
+# %% adjusting book-to-market data for industry
 
 stock.industry_adjusted_data('bmit')
-stock.industry_adjusted_data('momit')
-stock.composite_data('adjusted_bmit', 'adjusted_momit')
 
+# %% Loading once more the returns and performance statistics
+# for the high-low industry adjusted portfolio
 
+s_i, d_i = stock.portfolio(kpi='adjusted_bmit', highlow='highlow', return_dummy=True)
+p_i = Portfolio.portfolio_return(s_i)
+perf_i = Performance(p_i, 12, d_i, sum_of_weights=2)
+p2_i = perf.get_performance('industry adjusted high/low')
 
-# In[18]:
-
-
-s, d = stock.portfolio(kpi='adjusted_bmit_adjusted_momit', highlow='highlow', return_dummy=True)
-p = Portfolio.portfolio_return(s)
-perf = Performance(p, 12, d)
-p2 = perf.get_performance('composite adjusted high/low')
-
-# %%
+# %% Question 6 answers
  
-reg = PortfolioRegress.regressor_loop(p, p, index_name='Performance statistics', standardize=True)
+reg = PortfolioRegress.regressor_loop(p, p, index_name=
+                                'High-Low', standardize=True)
+reg_i = PortfolioRegress.regressor_loop(p_i, p_i, index_name=
+                                'High-Low ind. adjusted', standardize=True)
+frames = [reg, reg_i]
+q6 = pd.concat(frames)
+# %% Question 7 answers
 
-# %%
 p_indicator = PortfolioRegress.indicator_func(p)
-reg_2 = PortfolioRegress.regressor_loop(p_indicator, p, index_name='Performance Statistics', lag_x=0)
+reg_2 = PortfolioRegress.regressor_loop(p_indicator, p, index_name=
+                                'Performance Statistics', lag_x=0)
+p_i_indicator = PortfolioRegress.indicator_func(p_i)
+reg_2_i = PortfolioRegress.regressor_loop(p_i_indicator, p_i, index_name=
+                                'Performance Statistics', lag_x=0)
+frames = [reg_2, reg_2_i]
+q7 = pd.concat(frames)
+# %% Question 8 - start
+
+
 
