@@ -11,10 +11,11 @@ class Performance(object):
     # sharpe
     # t_stat
 
-    def __init__(self, portfolio_returns, frequency, dummy=None):
+    def __init__(self, portfolio_returns, frequency, dummy=None, sum_of_weights=1):
         self.portfolio_returns = portfolio_returns
         self.frequency = frequency
         self.dummy = dummy
+        self.sum_of_weights = sum_of_weights
 
     @staticmethod
     def avg_return(series, frequency):
@@ -30,11 +31,11 @@ class Performance(object):
         STD = cls.std_dev(series, frequency)
         return ER / STD
 
-    @staticmethod
-    def t_statistic(series, frequency):
+    @classmethod
+    def t_statistic(cls, series, frequency):
 
-        beta = np.mean(series) * frequency
-        sigma = np.std(series) * np.sqrt(frequency)
+        beta = cls.avg_return(series, frequency)
+        sigma = cls.std_dev(series, frequency)
         sqrt_n = np.sqrt(len(series))
 
         sigma_beta = sigma / sqrt_n

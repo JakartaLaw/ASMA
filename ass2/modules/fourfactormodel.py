@@ -1,3 +1,7 @@
+from sklearn.linear_model import LinearRegression
+from modules.stock import Stock
+from modules.utils import to_latex_table
+import pandas as pd
 
 
 class FourFactorModel(object):
@@ -6,12 +10,36 @@ class FourFactorModel(object):
 
         self.stock = stock
         self.portfolio = portfolio
+        self.portfolio.columns = ['actual']
 
-    def create_data(self):
+    def regress_model(self, model_name):
 
-        data = pd.concat([self.stock, self.portfolio], axis=1)
-        data.rename({0: 'respons'}, inplace=True, axis=1)
+        self.model_name = model_name
 
-        return data
+        factors = self.stock.return_df('factors')
+        X = factors.drop(['Tbillrate'], axis=1)
+        y = self.portfolio
+        cols = list(X.columns)
 
-    def regress_model(self):
+        lr = LinearRegression()
+        lr.fit(X=X, y=y)
+        r2, intercept, coef = lr.score(X, y), list(lr.intercept_)[0], lr.coef_[0]
+
+        results = {'r2': r2, 'intercept': intercept}
+        for i in range(len(cols)):
+
+            results[cols[i]] = coef[i]
+
+        self.results = pd.DataFrame(results, index=[self.model_name])
+        self.prediction = pd.DataFrame(lr.predict(X), index=X.index)
+        self.prediction.columns = ['prediction']
+
+    def get_results(self):
+        return self.results
+
+    def results_to_latex(self, file_name, decimals=3):
+        to_latex_table(file_name, self.results, directory=None,
+                       index=True, nr_decimals=decimals)
+
+    def get_prediction(self):
+        return pd.concat([self.prediction, self.portfolio], axis=1)
