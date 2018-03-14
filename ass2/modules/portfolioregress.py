@@ -11,6 +11,11 @@ class PortfolioRegress(object):
        pass
   
     @staticmethod
+    """
+    Processes the data such that the regressand will be an average of 12
+    subsequent observations and the regressor will be the preliminary obs.
+    of the y (used for Q6)
+    """
     def data_setup(data, data_type='x', lag_len=12):
         data_list = []
         if data_type == 'y':
@@ -26,10 +31,10 @@ class PortfolioRegress(object):
         return data_list
     
     @staticmethod
+    """
+    Standardizes the input variable s.t. mu = 0, sigma = 1 (used in Q6)
+    """
     def standardize_data(data):
-        """
-        do this after performing data_setup
-        """
         std_list = []
         std_dev = Performance.std_dev(data, 1)
         avg_data = Performance.avg_return(data, 1)
@@ -39,6 +44,10 @@ class PortfolioRegress(object):
         return std_list
         
     @classmethod
+    """
+    Custom made indicator function that assigns 1's to observations with
+    high historical VS and 0 to the rest (used in Q7)
+    """
     def indicator_func(cls, data, insample=12):
         indicator_list = []
         a = PortfolioRegress.data_setup(data, data_type='x', lag_len=12-insample)
@@ -51,6 +60,9 @@ class PortfolioRegress(object):
         return pd.DataFrame(indicator_list)
         
     @classmethod
+    """
+    Executes the linear regression on the pre-cleaned data (OLS method)
+    """
     def regressor_loop(cls, x, y, index_name, standardize=False, lag_x = 12, lag_y = 12):
         a = PortfolioRegress.data_setup(x, data_type='x', lag_len=lag_x)
         b = PortfolioRegress.data_setup(y, data_type='y', lag_len=lag_y)

@@ -19,6 +19,9 @@ class Performance(object):
 
     
     @staticmethod
+    """
+    Returns the arithmetic mean
+    """
     def avg_return(series, frequency, sum_of_weights=1):
         return np.mean(series * frequency)*sum_of_weights
 
@@ -49,6 +52,9 @@ class Performance(object):
         return np.prod(product_array)**(frequency / len(series)) - 1
 
     @staticmethod
+    """
+    Returns the average number of months a stock is in a given portfolio
+    """
     def average_number_of_months(dummy):
         if dummy is None:
             return None
@@ -56,6 +62,9 @@ class Performance(object):
             return np.mean(dummy.count(axis=0))
 
     def get_performance(self, name):
+        """
+        Function made for nice print-out options
+        """
         avg_ret = self.avg_return(self.portfolio_returns, self.frequency, self.sum_of_weights)
         std_dev = self.std_dev(self.portfolio_returns, self.frequency, self.sum_of_weights)
         sharpe_ratio = self.sharpe_ratio(self.portfolio_returns, self.frequency, self.sum_of_weights)
