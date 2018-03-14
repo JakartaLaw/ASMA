@@ -8,17 +8,17 @@ class Portfolio(object):
     """
 
     @staticmethod
-    def portfolio_weigths(df):
+    def portfolio_weigths(df, sum_of_weights):
         _list = []
         for i in range(len(df)):
-            w = 1 / df.count(axis=1)[i]
+            w = sum_of_weights / df.count(axis=1)[i]
             _list.append(w)
         return _list
 
     @classmethod
-    def portfolio_return(cls, df):
+    def portfolio_return(cls, df, sum_of_weights=1):
         _portfolio = df.sum(axis=1)
-        _w = cls.portfolio_weigths(df)
+        _w = cls.portfolio_weigths(df, sum_of_weights=sum_of_weights)
         new_list = [_w[i] * _portfolio[i] for i in range(len(_w))]
         new_df = pd.DataFrame(new_list, index=df.index)
         return new_df
