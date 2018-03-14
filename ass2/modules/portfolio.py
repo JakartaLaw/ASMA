@@ -21,7 +21,7 @@ class Portfolio(object):
         return _list
 
     @classmethod
-    """
+    """r 
     Takes the weigted portfolio as input and computes the monthly return
     """
     
