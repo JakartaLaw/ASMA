@@ -17,17 +17,16 @@ class Performance(object):
         self.dummy = dummy
         self.sum_of_weights = sum_of_weights
 
-    
     @staticmethod
-    """
-    Returns the arithmetic mean
-    """
     def avg_return(series, frequency, sum_of_weights=1):
-        return np.mean(series * frequency)*sum_of_weights
+        """
+        Returns the arithmetic mean
+        """
+        return np.mean(series * frequency) * sum_of_weights
 
     @staticmethod
     def std_dev(series, frequency, sum_of_weights=1):
-        return np.sqrt(np.var(series) * frequency)*sum_of_weights
+        return np.sqrt(np.var(series) * frequency) * sum_of_weights
 
     @classmethod
     def sharpe_ratio(cls, series, frequency, sum_of_weights=1):
@@ -52,10 +51,10 @@ class Performance(object):
         return np.prod(product_array)**(frequency / len(series)) - 1
 
     @staticmethod
-    """
-    Returns the average number of months a stock is in a given portfolio
-    """
     def average_number_of_months(dummy):
+        """
+        Returns the average number of months a stock is in a given portfolio
+        """
         if dummy is None:
             return None
         else:
@@ -67,7 +66,8 @@ class Performance(object):
         """
         avg_ret = self.avg_return(self.portfolio_returns, self.frequency, self.sum_of_weights)
         std_dev = self.std_dev(self.portfolio_returns, self.frequency, self.sum_of_weights)
-        sharpe_ratio = self.sharpe_ratio(self.portfolio_returns, self.frequency, self.sum_of_weights)
+        sharpe_ratio = self.sharpe_ratio(
+            self.portfolio_returns, self.frequency, self.sum_of_weights)
         t_stat = self.t_statistic(self.portfolio_returns, self.frequency)
         geo_ret = self.geo_return(self.portfolio_returns, self.frequency)
         count_months = self.average_number_of_months(self.dummy)

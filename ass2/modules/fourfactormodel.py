@@ -6,6 +6,10 @@ import pandas as pd
 
 class FourFactorModel(object):
 
+    """
+    Object necessary for the four factor model
+    """
+
     def __init__(self, stock, portfolio):
 
         self.stock = stock
@@ -13,6 +17,10 @@ class FourFactorModel(object):
         self.portfolio.columns = ['actual']
 
     def four_factor_model(self):
+        """
+
+        Creates an dataframe, with four factor model
+        """
 
         factors = self.stock.return_df('factors')
         X = factors.drop(['Tbillrate'], axis=1)
@@ -33,6 +41,9 @@ class FourFactorModel(object):
         self.four_factor_prediction.columns = ['prediction']
 
     def capm_model(self):
+        """
+        Creates an dataframe for the capm model
+        """
 
         factors = self.stock.return_df('factors')
         X = factors.drop(['Tbillrate', 'SMB', 'WML', 'HML'], axis=1)
@@ -53,6 +64,9 @@ class FourFactorModel(object):
         self.capm_prediction.columns = ['prediction']
 
     def regress_model(self, model_name):
+        """
+        Returns regression results
+        """
 
         self.capm_model()
         self.four_factor_model()
@@ -61,14 +75,22 @@ class FourFactorModel(object):
         self.results = pd.concat([self.capm, self.four_factor])
 
     def get_results(self):
+        """
+        A getter-method for results
+        """
         return self.results
 
     def results_to_latex(self, file_name, decimals=3):
+        """
+        Prints results to latex
+        """
         to_latex_table(file_name, self.results, directory=None,
                        index=True, nr_decimals=decimals)
 
     def get_prediction(self, model):
-
+        """
+        A getter method for the prediction, for either capm or four factor
+        """
         if model is 'CAPM':
             return pd.concat([self.capm_prediction, self.portfolio], axis=1)
 

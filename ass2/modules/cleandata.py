@@ -6,10 +6,10 @@ from modules.utils import date_fixer
 class CleanData(object):
 
     @staticmethod
-    """
-    Returns time-index from the "data-and-factors" sheet in the Excel
-    """
     def get_index():
+        """
+        Returns time-index from the "data-and-factors" sheet in the Excel
+        """
 
         data = pd.read_csv('data_and_factors.csv', sep=';', decimal=',',
                            header=None, usecols=[0, 1, 2, 3, 4, 5])
@@ -20,11 +20,11 @@ class CleanData(object):
         return data['date']
 
     @classmethod
-    """
-    Manipulate all given data sheets used in the assignment to have time_index
-    as index and nice column names so that everything is callable
-    """
     def get_data(cls, csv_name, doc_type=None):
+        """
+        Manipulate all given data sheets used in the assignment to have time_index
+        as index and nice column names so that everything is callable
+        """
         if doc_type == None:
             index = cls.get_index()
 

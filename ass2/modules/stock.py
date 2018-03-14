@@ -9,6 +9,11 @@ import matplotlib.pyplot as plt
 
 class Stock(object):
 
+    """
+    Initiates a stock object:
+
+    """
+
     def __init__(self):
 
         bmit = CleanData.get_data('bmit.csv')
@@ -47,12 +52,18 @@ class Stock(object):
 
     @staticmethod
     def standardize_data(df):
+        """
+        Standardizes data with mean zero, and std. dev 1
+        """
         std_df = df.std(axis=1)
         mean_df = df.mean(axis=1)
         return df.add(-mean_df, axis=0).mul((1 / std_df), axis=0)  # standardized data
 
     @staticmethod
     def add_dfs(df1, df2, add_or_minus='add'):
+        """
+        Can add two dataframes together
+        """
 
         if add_or_minus == 'add':
             df = pd.DataFrame(df1.fillna(0) + df2.fillna(0))
@@ -66,15 +77,14 @@ class Stock(object):
         return df
 
     def add_data(self, df_name, df):
+        """
+        adds dataframe to dictionary containing all dataframes
+        """
         self.data[df_name] = df
 
     def composite_data(self, df1, df2, standardize=True):
-        """ add data to self.data
-
-        Parameters
-        ==========
-        df1 : string (from data)
-        df2 : string (from data)
+        """
+        Function that takes two dataframes, and make a composite portfolio
         """
 
         df_name = "{}_{}".format(df1, df2)
@@ -96,6 +106,9 @@ class Stock(object):
 
     @staticmethod
     def empty_df(df):
+        """
+        Creates and empty dataframe, based on the dimensions of the input dataframe
+        """
 
         index, cols, shape = df.index, df.columns, df.shape
         array_nan = np.empty(shape).fill(np.nan)
@@ -110,6 +123,9 @@ class Stock(object):
         return df_industry.mul(df_benchmark, axis=0)
 
     def industry_adjusted_data(self, industry):
+        """
+        Industry adjust data and adds it to the dictionary containing all dataframes
+        """
 
         assert industry in ['bmit', 'momit'], "industry must be either 'bmit' or 'momit'"
 
@@ -131,6 +147,9 @@ class Stock(object):
         self.add_data(df_name, df_industry_adjusted)
 
     def industry_dummy(self, kpi, ascending=True):
+        """
+        Creates dummy for a given industry
+        """
 
         kpi_data = "industry_{}".format(kpi)
         industry = self.return_df(kpi_data)
@@ -141,10 +160,11 @@ class Stock(object):
 
         return df_rank
 
-    def industry_rotation(self):
-        pass
-
     def portfolio_dummy(self, kpi, ascending=True, pct=True):
+        """
+        Function that returns a dummy = 1 for given observations, that have an
+        good enough rank
+        """
 
         df_kpi = self.return_df(kpi)
 

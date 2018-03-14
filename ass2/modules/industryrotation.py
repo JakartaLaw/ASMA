@@ -13,6 +13,12 @@ import matplotlib.pyplot as plt
 
 class IndustryRotation(object):
 
+    """
+    An object for industry rotation, based on the module Stock
+
+    -> more information can be found in Stock object
+    """
+
     def __init__(self):
 
         bmit = CleanData.get_data('bmit.csv')
